@@ -305,7 +305,15 @@ class Coder:
             if not fname.exists():
                 self.io.tool_output(f"Creating empty file {fname}")
                 fname.parent.mkdir(parents=True, exist_ok=True)
-                fname.touch()
+                if fname.suffix in ['.tex', '.docx']:
+                    # Create an empty LaTeX or Word document
+                    if fname.suffix == '.tex':
+                        fname.write_text(r"\documentclass{article}\begin{document}\end{document}")
+                    elif fname.suffix == '.docx':
+                        # Placeholder for creating an empty Word document
+                        pass
+                else:
+                    fname.touch()
 
             if not fname.is_file():
                 raise ValueError(f"{fname} is not a file")
@@ -498,11 +506,14 @@ class Coder:
                 prompt += relative_fname
                 prompt += f"\n{self.fence[0]}\n"
 
-                prompt += content
-
-                # lines = content.splitlines(keepends=True)
-                # lines = [f"{i+1:03}:{line}" for i, line in enumerate(lines)]
-                # prompt += "".join(lines)
+                if fname.suffix == '.tex':
+                    # Parse LaTeX content for better representation
+                    prompt += self.parse_latex_content(content)
+                elif fname.suffix == '.docx':
+                    # Parse Word content for better representation
+                    prompt += self.parse_word_content(content)
+                else:
+                    prompt += content
 
                 prompt += f"{self.fence[1]}\n"
 
@@ -1689,3 +1700,10 @@ class Coder:
 
     def apply_edits(self, edits):
         return
+    def parse_latex_content(self, content):
+        # Placeholder for LaTeX content parsing logic
+        return content
+
+    def parse_word_content(self, content):
+        # Placeholder for Word content parsing logic
+        return content
